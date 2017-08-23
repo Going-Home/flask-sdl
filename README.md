@@ -2,6 +2,7 @@
 
 ## Install dependencies & Activate virtual environment
 ```
+apt-get install -y sqlite
 pip intall virtualenv
 virtualenv env
 source env/bin/activate
