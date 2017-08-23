@@ -1,5 +1,5 @@
 from flask import Flask, render_template, redirect, url_for, request
-import sqlite3, hashlib
+import sqlite3, hashlib, string
 
 
 app = Flask(__name__)
@@ -44,11 +44,11 @@ def caesar(plaintext, shift):
     return plaintext.translate(table)
 
 #admin pass 'admin'
-def check_password(hashed_password, user_password):
-    return hashed_password == caesar(user_password, 2)
-
 #def check_password(hashed_password, user_password):
-#   return hashed_password == hashlib.md5(user_password.encode()).hexdigest()
+#    return hashed_password == caesar(user_password, 2)
+
+def check_password(hashed_password, user_password):
+   return hashed_password == hashlib.md5(user_password.encode()).hexdigest()
 
 if __name__=="__main__":
 	app.run()
