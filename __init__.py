@@ -1,4 +1,6 @@
 from flask import Flask, render_template, redirect, url_for, request
+import sqlite3, hashlib
+
 
 app = Flask(__name__)
 
@@ -6,7 +8,10 @@ app = Flask(__name__)
 def login():
     error = None
     if request.method == 'POST':
-        if request.form['username'] != 'admin' or request.form['password'] != 'admin':
+        username = request.form['username']
+        password = request.form['password']
+        completion = validate(username, password)
+        if completion ==False:
             error = 'Invalid Credentials. Please try again.'
         else:
             return redirect(url_for('secret'))
@@ -15,6 +20,35 @@ def login():
 @app.route('/secret')
 def secret():
     return "This is a secret page!"
+
+def validate(username, password):
+    con = sqlite3.connect('static/User.db')
+    completion = False
+    with con:
+                cur = con.cursor()
+                cur.execute("SELECT * FROM Users")
+                rows = cur.fetchall()
+                for row in rows:
+                    dbUser = row[0]
+                    dbPass = row[1]
+                    if dbUser==username:
+                        completion=check_password(dbPass, password)
+    return completion
+
+def caesar(plaintext, shift):
+    import unicodedata
+    plaintext = unicodedata.normalize('NFKD', plaintext).encode('ascii','ignore')
+    alphabet = '1fsf34sfa324e32d3vylker2fb'
+    shifted_alphabet = alphabet[shift:] + alphabet[:shift]
+    table = string.maketrans(alphabet, shifted_alphabet)
+    return plaintext.translate(table)
+
+#admin pass 'admin'
+def check_password(hashed_password, user_password):
+    return hashed_password == caesar(user_password, 2)
+
+#def check_password(hashed_password, user_password):
+#   return hashed_password == hashlib.md5(user_password.encode()).hexdigest()
 
 if __name__=="__main__":
 	app.run()
